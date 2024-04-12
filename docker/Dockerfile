@@ -1,59 +1,28 @@
-FROM ubuntu:23.10 AS hmmer-builder
+FROM debian:bullseye
+FROM ghcr.io/charlenelawdes/hmmer-docker AS hmmer-builder
+FROM ghcr.io/charlenelawdes/prodigal-docker AS prodigal-builder
+FROM ghcr.io/charlenelawdes/sklearn-docker AS sklearn-builder
 
 RUN apt-get update && apt-get install -y \
     git \
-    python3 \
-    python3-pip \
-    wget \
-    curl \
-    unzip \
-    htop \
-    vim
-
-RUN wget http://eddylab.org/software/hmmer/hmmer.tar.gz
-
-RUN tar zxf hmmer.tar.gz
-
-WORKDIR hmmer-3.4
-
-RUN ./configure --prefix /usr/local
-
-RUN make
-
-FROM ubuntu:23.10 AS prodigal-builder
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    zlib1g-dev
-
-RUN git clone https://github.com/hyattpd/Prodigal
-WORKDIR Prodigal
-RUN make
-
-FROM debian:latest 
-
-RUN apt-get update && apt-get install -y \
-    git \
-    gzip \
     gcc \
-    make \
     python3 \
+    cython3 \
     python3-biopython \
     python3-matplotlib \
-    python3-numpy \
     python3-pandas \
-    python3-pip \
     python3-seaborn \
-    python3-sklearn \
-    tar \
+    python3-pip \
     wget
 
-COPY --from=prodigal-builder /Prodigal /
-COPY --from=hmmer-builder /hmmer-3.4 /
 
+COPY --from=hmmer-builder /usr/local/bin/ /usr/local/bin/
+COPY --from=prodigal-builder /usr/local/bin/ /usr/local/bin/
+
+RUN pip3 install -U scikit-learn==0.21.3
 RUN git clone https://github.com/AnantharamanLab/VIBRANT
 RUN chmod -R 777 VIBRANT
 
-WORKDIR VIBRANT/databases 
-RUN python3 VIBRANT_setup.py
+WORKDIR /VIBRANT
+
+RUN python3 databases/VIBRANT_setup.py

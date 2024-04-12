@@ -24,7 +24,6 @@ RUN pip3 install -U scikit-learn==0.21.3
 RUN git clone https://github.com/AnantharamanLab/VIBRANT
 RUN chmod -R 777 VIBRANT
 
-ENV PATH="/usr/local/bin:${PATH}"
 WORKDIR /VIBRANT
 
 RUN python3 databases/VIBRANT_setup.py

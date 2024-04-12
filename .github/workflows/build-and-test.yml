@@ -27,7 +27,7 @@ jobs:
           name: ${{ env.REPO_NAME }}
           path: /tmp/${{ env.REPO_NAME }}.tar
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     steps:
       - name: Checkout code

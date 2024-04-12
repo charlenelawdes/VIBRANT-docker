@@ -1,7 +1,8 @@
-FROM debian:bullseye
 FROM ghcr.io/charlenelawdes/hmmer-docker AS hmmer-builder
 FROM ghcr.io/charlenelawdes/prodigal-docker AS prodigal-builder
 FROM ghcr.io/charlenelawdes/sklearn-docker AS sklearn-builder
+
+FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -23,6 +24,8 @@ RUN pip3 install -U scikit-learn==0.21.3
 RUN git clone https://github.com/AnantharamanLab/VIBRANT
 RUN chmod -R 777 VIBRANT
 
+ENV PATH="/usr/local/bin:${PATH}"
 WORKDIR /VIBRANT
 
 RUN python3 databases/VIBRANT_setup.py
+
